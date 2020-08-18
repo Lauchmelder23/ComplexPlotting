@@ -3,19 +3,9 @@
 
 #undef main
 
-void PrintSDLVersion()
-{
-	SDL_version* v = new SDL_version;
-	SDL_VERSION(v);
-	printf("Running on SDL %i.%i.%i\n", v->major, v->minor, v->patch);
-	
-	delete v;
-	v = nullptr;
-}
-
 int main(int argc, char** argv)
 {
-	PrintSDLVersion();
+	printf("Running on SDL %i.%i.%i\n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 	
 	return 0;
 }
