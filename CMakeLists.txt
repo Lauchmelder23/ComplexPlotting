@@ -6,4 +6,5 @@ cmake_minimum_required (VERSION 3.8)
 project ("ComplexPlotting")
 
 # Include sub-projects.
+add_subdirectory ("SDLFramework")
 add_subdirectory ("ComplexPlotting")
