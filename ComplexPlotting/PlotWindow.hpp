@@ -10,11 +10,12 @@ class PlotWindow :
 	public IWindow
 {
 public:
-	PlotWindow(std::string title);
+	PlotWindow(Uint32 id);
 
-	void OnEvent(const SDL_Event& e) override;
-	bool OnUpdate(double frametime) override;
-	void OnRender(SDL_Renderer* renderer) override;
+	bool OnEvent(const SDL_Event& e) override;
+	bool OnUpdate(double frametime = 0) override;
+	void OnRender(SDL_Renderer* renderer = nullptr) override;
 
 private:
+	Uint32 id;
 };

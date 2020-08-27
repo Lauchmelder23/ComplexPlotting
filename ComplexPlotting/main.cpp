@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <vector>
+#include <iostream>
 
-#include <SDL.h>
-#include "PlotWindow.hpp"
+#include "SDL.h"
+#include "PlotWindowManager.hpp"
 
 #undef main
 
@@ -13,7 +14,10 @@ int main(int argc, char** argv)
 	SDL_Init(SDL_INIT_VIDEO);
 
 	// Create and open some windows
-	PlotWindow window("Plot");
+	for (int i = 0; i < 3; i++)
+	{
+		PlotWindowManager::MakeNew();
+	}
 
 	// Wait for window processes to end
 	SDL_Event e;
@@ -25,12 +29,12 @@ int main(int argc, char** argv)
 			if (e.type == SDL_QUIT)
 				quit = true;
 
-			window.OnEvent(e);
+			PlotWindowManager::HandleEvents(e);
 		}
 
-		window.OnUpdate(0);
+		PlotWindowManager::Update();
 
-		window.OnRender(nullptr);
+		PlotWindowManager::Render();
 	}
 
 	return 0;
