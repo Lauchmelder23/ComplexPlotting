@@ -10,7 +10,7 @@ class PlotWindow :
 	public IWindow
 {
 public:
-	PlotWindow(Uint32 id);
+	PlotWindow(Uint32 id, std::string title);
 
 	bool OnEvent(const SDL_Event& e) override;
 	bool OnUpdate(double frametime = 0) override;

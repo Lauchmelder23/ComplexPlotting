@@ -13,12 +13,6 @@ int main(int argc, char** argv)
 	
 	SDL_Init(SDL_INIT_VIDEO);
 
-	// Create and open some windows
-	for (int i = 0; i < 3; i++)
-	{
-		PlotWindowManager::MakeNew();
-	}
-
 	// Wait for window processes to end
 	SDL_Event e;
 	bool quit = false;
@@ -36,6 +30,8 @@ int main(int argc, char** argv)
 
 		PlotWindowManager::Render();
 	}
+
+	PlotWindowManager::Quit();
 
 	return 0;
 }

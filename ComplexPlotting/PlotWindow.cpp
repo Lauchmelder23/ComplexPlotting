@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-PlotWindow::PlotWindow(Uint32 id) :
+PlotWindow::PlotWindow(Uint32 id, std::string title) :
 	IWindow::IWindow(
 		UnitVector2u * 400, 
 		UnitVector2i * SDL_WINDOWPOS_UNDEFINED,
-		"Plot " + std::to_string(id),
+		"Plot " + std::to_string(id) + " [" + title + "]",
 		NULL),
 	id(id)
 {
@@ -37,5 +37,10 @@ bool PlotWindow::OnUpdate(double frametime)
 
 void PlotWindow::OnRender(SDL_Renderer* renderer)
 {
+	SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 0, 255);
+	SDL_RenderClear(m_pRenderer);
+
+	SDL_RenderPresent(m_pRenderer);
+
 	return;
 }
