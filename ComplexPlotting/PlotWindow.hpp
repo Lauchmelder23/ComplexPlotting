@@ -15,9 +15,10 @@ class PlotWindow :
 	public IWindow
 {
 public:
-	PlotWindow(Uint32 id, std::string title);
+	PlotWindow(Uint32 id, std::string title, float rLow, float rHigh, float iLow, float iHigh);
 
 	void SetCallback(CmplxFunc callback);
+	void DrawTexture();
 
 	bool OnCreate() override;
 	bool OnEvent(const SDL_Event& e) override;
@@ -29,4 +30,7 @@ private:
 	CmplxFunc callback;
 
 	SDL_Texture* texture;
+	int w, h;
+
+	std::complex<float> low, high;
 };

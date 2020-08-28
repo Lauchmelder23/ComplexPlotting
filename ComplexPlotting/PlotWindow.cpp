@@ -5,6 +5,8 @@
 
 #define PI 3.1415926535f
 
+#define MAP(x, A, B, a, b) ((x - A) * (b - a) / (B - A) + a)
+
 SDL_Color HSVtoRGB(float H, float S, float V)
 {
 	float s = S / 100;
@@ -38,15 +40,17 @@ SDL_Color HSVtoRGB(float H, float S, float V)
 	return SDL_Color{ R, G, B, 255 };
 }
 
-PlotWindow::PlotWindow(Uint32 id, std::string title) :
+PlotWindow::PlotWindow(Uint32 id, std::string title, float rLow, float rHigh, float iLow, float iHigh) :
 	IWindow::IWindow(
-		UnitVector2u * 400, 
-		UnitVector2i * SDL_WINDOWPOS_UNDEFINED,
+		UnitVector2u * 400,
+		UnitVector2i* SDL_WINDOWPOS_UNDEFINED,
 		"Plot " + std::to_string(id) + " [" + title + "]",
 		NULL),
-	id(id), texture(nullptr)
+	id(id), texture(nullptr),
+	low({ rLow, iLow }), high({rHigh, iHigh}),
+	w(0), h(0)
 {
-
+	
 }
 
 void PlotWindow::SetCallback(CmplxFunc callback)
@@ -54,9 +58,34 @@ void PlotWindow::SetCallback(CmplxFunc callback)
 	this->callback = callback;
 }
 
+void PlotWindow::DrawTexture()
+{
+	SDL_SetRenderTarget(m_pRenderer, texture);
+	for (int y = 0; y < h; y++)
+	{
+		for (int x = 0; x < h; x++)
+		{
+			float a = std::arg(callback(std::complex<float>
+			{
+				MAP((float)x, 0, w, low.real(), high.real()),
+				MAP((float)y, 0, h, low.real(), high.real())
+			}
+			));
+			a = a / PI * 180;
+			if (a < 0)
+				a = 360 + a;
+
+			SDL_Color c = HSVtoRGB(a, 100, 100);
+
+			SDL_SetRenderDrawColor(m_pRenderer, c.r, c.g, c.b, c.a);
+			SDL_RenderDrawPoint(m_pRenderer, x, y);
+		}
+	}
+	SDL_SetRenderTarget(m_pRenderer, NULL);
+}
+
 bool PlotWindow::OnCreate()
 {
-	int w = 0, h = 0;
 	SDL_GetWindowSize(m_pWindow, &w, &h);
 	texture = SDL_CreateTexture(m_pRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
 	if (texture == nullptr)
@@ -90,15 +119,8 @@ bool PlotWindow::OnUpdate(double frametime)
 
 void PlotWindow::OnRender(SDL_Renderer* renderer)
 {
-	float a = std::arg(callback(std::complex<float>{0.f, 0.f}));
-	a = a / PI * 180;
-	if (a < 0)
-		a = 360 + a;
-
-	SDL_Color c = HSVtoRGB(a, 100, 100);
-
-	SDL_SetRenderDrawColor(m_pRenderer, c.r, c.g, c.b, c.a);
 	SDL_RenderClear(m_pRenderer);
+	SDL_RenderCopy(m_pRenderer, texture, NULL, NULL);
 
 	SDL_RenderPresent(m_pRenderer);
 
