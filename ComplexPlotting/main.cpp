@@ -20,9 +20,6 @@ int main(int argc, char** argv)
 	{
 		while (SDL_PollEvent(&e))
 		{
-			if (e.type == SDL_QUIT)
-				quit = true;
-
 			PlotWindowManager::HandleEvents(e);
 		}
 

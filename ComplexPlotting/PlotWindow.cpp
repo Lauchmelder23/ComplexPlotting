@@ -78,9 +78,9 @@ bool PlotWindow::OnUpdate(double frametime)
 void PlotWindow::OnRender(SDL_Renderer* renderer)
 {
 	float a = std::arg(callback(std::complex<float>{0.f, 0.f}));
-	a += PI;
-	a /= PI;
-	a *= 360;
+	a = a / PI * 180;
+	if (a < 0)
+		a = 360 + a;
 
 	SDL_Color c = HSVtoRGB(a, 100, 100);
 

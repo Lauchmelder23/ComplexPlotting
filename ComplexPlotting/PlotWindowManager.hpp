@@ -47,9 +47,11 @@ public:
 			if (title != "")
 			{
 				PlotWindow* newWindow = MakeNew(title);
-				newWindow->SetCallback(std::bind([](std::complex<float> c)
+				float a = (float)(rand() % 200 - 100) / 100.f;
+				float b = (float)(rand() % 200 - 100) / 100.f;
+				newWindow->SetCallback(std::bind([a, b](std::complex<float> c)
 				{
-					return std::complex<float>{ 1.f, 1.f };
+					return std::complex<float>{ a, b };
 				}, 
 				std::placeholders::_1));
 
