@@ -1,5 +1,7 @@
 #include "PlotWindow.hpp"
 
+#include "PlotWindowException.hpp"
+
 #include <map>
 #include <thread>
 #include <future>
@@ -13,9 +15,18 @@ public:
 	static PlotWindow* MakeNew(std::string title)
 	{
 		PlotWindow* plt = new PlotWindow(PlotWindowCount, title);
+		plt->Open();
+
+		float a = (float)(rand() % 200 - 100) / 100.f;
+		float b = (float)(rand() % 200 - 100) / 100.f;
+		plt->SetCallback(std::bind([a, b](std::complex<float> c)
+			{
+				return std::complex<float>{ a, b };
+			},
+			std::placeholders::_1));
+
 		PlotWindows.insert({ PlotWindowCount, plt });
 		PlotWindowCount++;
-		plt->Open();
 
 		return plt;
 	}
@@ -46,16 +57,22 @@ public:
 			std::string title = InputFuture.get();
 			if (title != "")
 			{
-				PlotWindow* newWindow = MakeNew(title);
-				float a = (float)(rand() % 200 - 100) / 100.f;
-				float b = (float)(rand() % 200 - 100) / 100.f;
-				newWindow->SetCallback(std::bind([a, b](std::complex<float> c)
+				try
 				{
-					return std::complex<float>{ a, b };
-				}, 
-				std::placeholders::_1));
+					PlotWindow* newWindow = MakeNew(title);
+					PrintThreadSafe("-- Success\n");
+				}
+				catch (PlotWindowException e)
+				{
+					PrintThreadSafe(e.what());
+					PrintThreadSafe("\n");
+					PrintThreadSafe("-- Failed.\n");
 
-				PrintThreadSafe("-- Success\n");
+					PlotWindow* src = e.where();
+					src->Stop();
+					delete src;
+					src = nullptr;
+				}
 			}
 
 			InputPromise = std::promise<std::string>();

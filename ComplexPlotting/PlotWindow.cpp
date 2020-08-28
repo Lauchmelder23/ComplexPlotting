@@ -1,4 +1,5 @@
 #include "PlotWindow.hpp"
+#include "PlotWindowException.hpp"
 
 #include <iostream>
 
@@ -43,13 +44,25 @@ PlotWindow::PlotWindow(Uint32 id, std::string title) :
 		UnitVector2i * SDL_WINDOWPOS_UNDEFINED,
 		"Plot " + std::to_string(id) + " [" + title + "]",
 		NULL),
-	id(id)
+	id(id), texture(nullptr)
 {
+
 }
 
 void PlotWindow::SetCallback(CmplxFunc callback)
 {
 	this->callback = callback;
+}
+
+bool PlotWindow::OnCreate()
+{
+	int w = 0, h = 0;
+	SDL_GetWindowSize(m_pWindow, &w, &h);
+	texture = SDL_CreateTexture(m_pRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
+	if (texture != nullptr)
+		throw PlotWindowException("Failed to create SDL_Texture.", this);
+
+	return true;
 }
 
 bool PlotWindow::OnEvent(const SDL_Event& e)

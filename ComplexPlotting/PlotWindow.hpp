@@ -19,6 +19,7 @@ public:
 
 	void SetCallback(CmplxFunc callback);
 
+	bool OnCreate() override;
 	bool OnEvent(const SDL_Event& e) override;
 	bool OnUpdate(double frametime = 0) override;
 	void OnRender(SDL_Renderer* renderer = nullptr) override;
@@ -26,4 +27,6 @@ public:
 private:
 	Uint32 id;
 	CmplxFunc callback;
+
+	SDL_Texture* texture;
 };

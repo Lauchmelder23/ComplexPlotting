@@ -14,7 +14,7 @@ endif()
 # Add source to this project's executable.
 add_executable (ComplexPlotting  
 	"main.cpp"
- "PlotWindow.hpp" "PlotWindow.cpp" "PlotWindowManager.hpp")
+ "PlotWindow.hpp" "PlotWindow.cpp" "PlotWindowManager.hpp" "PlotWindowException.hpp")
 
 target_include_directories(ComplexPlotting PRIVATE
 	${SDL2_INCLUDES}
