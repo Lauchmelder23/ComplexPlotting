@@ -14,7 +14,7 @@ public:
 
 	static PlotWindow* MakeNew(std::string title)
 	{
-		PlotWindow* plt = new PlotWindow(PlotWindowCount, title, -2.f, 2.f, -2.f, 2.f);
+		PlotWindow* plt = new PlotWindow(PlotWindowCount, title, -5.f, 5.f, -5.f, 5.f);
 		plt->Open();
 
 		// TODO: remove random values
@@ -22,8 +22,12 @@ public:
 		float b = (float)(rand() % 200 - 100) / 100.f;
 		plt->SetCallback(std::bind([a, b](std::complex<float> c)
 			{
+				/*
 				return std::complex<float>{1, 1} / (c + std::complex<float>{1, 0})
 					+ std::complex<float>{2, 1} / (c + std::complex<float>{-1, 0});
+				*/
+
+				return std::tan(std::sin(c));
 			},
 			std::placeholders::_1));
 		plt->DrawTexture();
