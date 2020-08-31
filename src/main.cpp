@@ -3,6 +3,10 @@
 
 #include <iostream>
 
+#include "ShaderProgram.hpp"
+#include "Triangle.hpp"
+#include "Quad.hpp"
+
 void LogGLFWerror()
 {
 	const char* error = new const char;
@@ -42,6 +46,32 @@ int main(int argc, char** argv)
 	glViewport(0, 0, 800, 800);
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
+	// Create Shader Program
+	ShaderProgram program;
+	program.VertexShader = "shaders/triangle.vert";
+	program.FragmentShader = "shaders/triangle.frag";
+
+	char* error = new char;
+	if (!program.Build(&error))
+	{
+		std::cout << error << std::endl;
+		return -1;
+	}
+
+	// Make triangle
+	Triangle t(
+		{ -0.5f, -0.5f, 0.f },
+		{ 0.5f, -0.5f, 0.f },
+		{ 0.f, 0.5, 0.f }
+	);
+
+	Quad q(
+		{ -0.5f, 0.5f, 0.0f },
+		{ 0.5f, 0.5f, 0.0f },
+		{ 0.5f, -0.5f, 0.0f },
+		{ -0.5f, -0.5f, 0.0f }
+	);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -49,8 +79,15 @@ int main(int argc, char** argv)
 		glClearColor(0.4f, 0.1f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		program.Use();
+		q.Draw();
+
 		glfwSwapBuffers(window);
 	}
+
+	glfwDestroyWindow(window);
+
+	glfwTerminate();
 
 	return 0;
 }
