@@ -1,7 +1,7 @@
 
 add_executable(ComplexPlotting
 	"main.cpp"
- "ShaderProgram.hpp")
+  "PlotWindow.hpp")
 
 file(GLOB vendor_SRC
 	${CMAKE_SOURCE_DIR}/vendor/src/*.c
@@ -21,6 +21,6 @@ target_link_libraries(ComplexPlotting
 	glfw
 )
 
-add_custom_command(TARGET ComplexPlotting POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/shaders $<TARGET_FILE_DIR:ComplexPlotting>/shaders
-)
+#add_custom_command(TARGET ComplexPlotting POST_BUILD
+#	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/shaders $<TARGET_FILE_DIR:ComplexPlotting>/shaders
+#)
