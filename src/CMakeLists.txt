@@ -1,7 +1,7 @@
 
 add_executable(ComplexPlotting
 	"main.cpp"
-  "PlotWindow.hpp")
+  "PlotWindow.hpp" "PlotWindow.cpp")
 
 file(GLOB vendor_SRC
 	${CMAKE_SOURCE_DIR}/vendor/src/*.c
@@ -13,7 +13,6 @@ target_sources(ComplexPlotting PRIVATE
 
 target_include_directories(ComplexPlotting PRIVATE
 	glfw
-	./primitives
 	${CMAKE_SOURCE_DIR}/vendor/include
 )
 
