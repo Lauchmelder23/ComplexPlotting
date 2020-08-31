@@ -76,10 +76,14 @@ int main(int argc, char** argv)
 	{
 		glfwPollEvents();
 
+		float time = glfwGetTime();
+		int timeUniformLocation = glGetUniformLocation(program.program_id, "t");
+
 		glClearColor(0.4f, 0.1f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		program.Use();
+		glUniform1f(timeUniformLocation, time);
 		q.Draw();
 
 		glfwSwapBuffers(window);

@@ -77,6 +77,8 @@ public:
 		glUseProgram(program_id);
 	}
 
+	unsigned int vertexShader_id, fragmentShader_id, program_id;
+
 private:
 	void LoadFile(std::string path, char** source)
 	{
@@ -90,6 +92,4 @@ private:
 		memcpy_s(*source, s, shader.c_str(), s);
 		(*source)[s] = '\0';
 	}
-
-	unsigned int vertexShader_id, fragmentShader_id, program_id;
 };

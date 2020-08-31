@@ -37,7 +37,6 @@ public:
 	{
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices);
-		glBindVertexArray(0);
 	}
 
 private:
