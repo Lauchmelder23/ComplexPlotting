@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 
@@ -8,7 +10,7 @@
 class PlotWindow
 {
 public:
-	PlotWindow(int w, int h, int id);
+	PlotWindow(int w, int h, int id, std::string title);
 
 	bool ShouldClose() { return glfwWindowShouldClose(window); }
 	void Destroy();

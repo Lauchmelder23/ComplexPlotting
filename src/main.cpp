@@ -21,11 +21,6 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	for (int i = 0; i < 1; i++)
-	{
-		PlotManager::NewPlot();
-	}
-
 	while (PlotManager::isOpen)
 	{
 		glfwPollEvents();

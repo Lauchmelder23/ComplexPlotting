@@ -3,10 +3,10 @@
 #include <iostream>
 #include <string>
 
-PlotWindow::PlotWindow(int w, int h, int id) :
+PlotWindow::PlotWindow(int w, int h, int id, std::string title) :
 	window(nullptr), id(id)
 {
-	window = glfwCreateWindow(w, h, (std::string("Plot ") + std::to_string(id)).c_str(), NULL, NULL);
+	window = glfwCreateWindow(w, h, ("Plot " + std::to_string(id) + " | " + title).c_str(), NULL, NULL);
 	if (window == nullptr)
 	{
 		const char* buffer = new const char[512];
