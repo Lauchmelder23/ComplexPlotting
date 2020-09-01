@@ -1,7 +1,7 @@
 
 add_executable(ComplexPlotting
 	"main.cpp"
-  "PlotWindow.hpp" "PlotWindow.cpp")
+  "PlotWindow.hpp" "PlotWindow.cpp" "PlotManager.hpp" "PlotManager.cpp")
 
 file(GLOB vendor_SRC
 	${CMAKE_SOURCE_DIR}/vendor/src/*.c

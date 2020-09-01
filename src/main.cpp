@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 
-#include "PlotWindow.hpp"
+#include "PlotManager.hpp"
 
 int main(int argc, char** argv)
 {
@@ -21,27 +21,14 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	std::vector<PlotWindow> windows;
-	windows.emplace_back(500, 500, 1);
-	windows.emplace_back(500, 500, 2);
-	windows.emplace_back(500, 500, 3);
+	for (int i = 0; i < 1; i++)
+	{
+		PlotManager::NewPlot();
+	}
 
-	while (!windows.empty())
+	while (PlotManager::isOpen)
 	{
 		glfwPollEvents();
-
-		for (std::vector<PlotWindow>::iterator it = windows.begin(); it != windows.end();)
-		{
-			if (it->ShouldClose())
-			{
-				it->Destroy();
-				it = windows.erase(it);
-				continue;
-			}
-
-			it->GiveContext();
-			it->Display();
-			it++;
-		}
+		PlotManager::Loop();
 	}
 }

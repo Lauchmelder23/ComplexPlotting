@@ -39,11 +39,14 @@ void PlotWindow::GiveContext()
 	glfwMakeContextCurrent(window);
 }
 
-void PlotWindow::Display()
+void PlotWindow::Clear()
 {
 	glClearColor(0.6f, 0.1f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+}
 
+void PlotWindow::Display()
+{
 	glfwSwapBuffers(window);
 }
 

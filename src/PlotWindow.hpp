@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 
+#pragma once
+
 class PlotWindow
 {
 public:
@@ -12,7 +14,8 @@ public:
 	void Destroy();
 
 	void GiveContext();
-	void Display();
+	virtual void Clear();
+	virtual void Display();
 
 private:
 	int id;
