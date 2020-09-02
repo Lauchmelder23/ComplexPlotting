@@ -34,6 +34,6 @@ private:
 	ShaderProgram shader;
 	BufferObject VAO, VBO, EBO;
 
-	float			vertices[4 * 3];
+	float			vertices[4 * 3 * 4];
 	unsigned int	indices[2 * 3];
 };

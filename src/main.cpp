@@ -9,6 +9,8 @@
 
 int main(int argc, char** argv)
 {
+	srand(time(0));
+
 	int result = glfwInit();
 	if (result != GL_TRUE)
 	{

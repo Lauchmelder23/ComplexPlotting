@@ -4,13 +4,15 @@
 #include <string>
 #include <fstream>
 
+#define frand() ((float)rand() / (float)RAND_MAX)
+
 PlotWindow::PlotWindow(int w, int h, int id, std::string title) :
 	window(nullptr), id(id), 
 	vertices{
-		-0.5f,  0.5f, 0.0f,
-		 0.5f,  0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f
+		-0.5f,  0.5f, 0.0f, frand(), frand(), frand(),
+		 0.5f,  0.5f, 0.0f, frand(), frand(), frand(),
+		 0.5f, -0.5f, 0.0f, frand(), frand(), frand(),
+		-0.5f, -0.5f, 0.0f, frand(), frand(), frand()
 	}, 
 	indices{
 		0, 1, 3,
@@ -111,8 +113,10 @@ PlotWindow::PlotWindow(int w, int h, int id, std::string title) :
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (3 + 3) * sizeof(float), (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (3 + 3) * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
