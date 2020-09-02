@@ -18,7 +18,7 @@ PlotWindow::PlotWindow(int w, int h, int id, std::string title) :
 		0, 1, 3,
 		1, 2, 3
 	},
-	vert(0), frag(0), shader(0), VAO(0), VBO(0), EBO(0)
+	shader(nullptr), VAO(0), VBO(0), EBO(0)
 {
 	window = glfwCreateWindow(w, h, ("Plot " + std::to_string(id) + " | " + title).c_str(), NULL, NULL);
 	if (window == nullptr)
@@ -42,61 +42,7 @@ PlotWindow::PlotWindow(int w, int h, int id, std::string title) :
 
 	glViewport(0, 0, w, h);
 
-	int success;
-	char errorBuf[512];
-
-	// Load and compile Vertex Shader
-	vert = glCreateShader(GL_VERTEX_SHADER);
-	char* shaderSource = nullptr;
-	LoadShaderSourceCode("shaders/basic.vert", &shaderSource);
-	if (shaderSource == nullptr)
-		shaderSource = "";
-
-	glShaderSource(vert, 1, &shaderSource, NULL);
-	glCompileShader(vert);
-	glGetShaderiv(vert, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vert, 512, NULL, errorBuf);
-		std::cerr << "Vertex shader compilation error" << std::endl << errorBuf << std::endl;
-		glfwSetWindowShouldClose(window, 1);
-		return;
-	}
-
-	// load and compile Fragment Shader
-	frag = glCreateShader(GL_FRAGMENT_SHADER);
-	shaderSource = nullptr;
-	LoadShaderSourceCode("shaders/basic.frag", &shaderSource);
-	if (shaderSource == nullptr)
-		shaderSource = "";
-
-	glShaderSource(frag, 1, &shaderSource, NULL);
-	glCompileShader(frag);
-	glGetShaderiv(frag, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(frag, 512, NULL, errorBuf);
-		std::cerr << "Fragment shader compilation error" << std::endl << errorBuf << std::endl;
-		glfwSetWindowShouldClose(window, 1);
-		return;
-	}
-
-	// Link shaders into shader program
-	shader = glCreateProgram();
-	glAttachShader(shader, vert);
-	glAttachShader(shader, frag);
-	glLinkProgram(shader);
-	glGetProgramiv(shader, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		glGetProgramInfoLog(shader, 512, NULL, errorBuf);
-		std::cerr << "Shader program linking error" << std::endl << errorBuf << std::endl;
-		glfwSetWindowShouldClose(window, 1);
-		return;
-	}
-
-	glDeleteShader(frag);
-	glDeleteShader(vert);
+	shader = new Shader("shaders/basic.vert", "shaders/basic.frag");
 
 	// Generate buffers
 	glGenVertexArrays(1, &VAO);
@@ -130,7 +76,8 @@ void PlotWindow::Destroy()
 	glDeleteBuffers(1, &VBO);
 	glDeleteVertexArrays(1, &VAO);
 
-	glDeleteProgram(shader);
+	delete shader;
+	shader = nullptr;
 
 	glfwDestroyWindow(window);
 }
@@ -148,7 +95,7 @@ void PlotWindow::Clear()
 
 void PlotWindow::Display()
 {
-	glUseProgram(shader);
+	shader->Use();
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -160,24 +107,4 @@ void PlotWindow::FramebufferSizeCallback(GLFWwindow* window, int w, int h)
 {
 	glfwMakeContextCurrent(window);
 	glViewport(0, 0, w, h);
-}
-
-void PlotWindow::LoadShaderSourceCode(const char* path, char** buffer)
-{
-	std::ifstream file(path);
-	if (!file.good())
-	{
-		std::cerr << "File not found: " << path << std::endl;
-		*buffer = nullptr;
-		return;
-	}
-
-	std::string code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	size_t len = code.size();
-	*buffer = (char*)malloc(len + sizeof(char));
-	if (*buffer == nullptr)
-		return;
-	
-	memcpy_s(*buffer, len, code.c_str(), len);
-	(*buffer)[len] = '\0';
 }
