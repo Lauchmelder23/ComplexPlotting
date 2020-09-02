@@ -7,6 +7,10 @@
 
 #pragma once
 
+typedef unsigned int BufferObject;
+typedef unsigned int Shader;
+typedef unsigned int ShaderProgram;
+
 class PlotWindow
 {
 public:
@@ -24,4 +28,12 @@ private:
 	GLFWwindow* window;
 
 	static void FramebufferSizeCallback(GLFWwindow* window, int w, int h);
+	static void LoadShaderSourceCode(const char* path, char** buffer);
+
+	Shader vert, frag;
+	ShaderProgram shader;
+	BufferObject VAO, VBO, EBO;
+
+	float			vertices[4 * 3];
+	unsigned int	indices[2 * 3];
 };
