@@ -1,18 +1,28 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
+#include <glm/glm.hpp>
+
+#include <imgui/imgui.h>
 
 #include "Shader.hpp"
 
 typedef unsigned int BufferObject;
 
+typedef struct
+{
+	float x, y, z;
+	float arg;
+} Vertex;
+
 class PlotWindow
 {
 public:
-	PlotWindow(int w, int h, int id, std::string title);
+	PlotWindow(int w, int h, int id, unsigned int detail, std::string title);
 
 	bool ShouldClose() { return glfwWindowShouldClose(window); }
 	void Destroy();
@@ -26,10 +36,14 @@ private:
 	GLFWwindow* window;
 
 	static void FramebufferSizeCallback(GLFWwindow* window, int w, int h);
-
-	Shader* shader;
 	BufferObject VAO, VBO, EBO;
 
-	float			vertices[4 * 3 * 4];
-	unsigned int	indices[2 * 3];
+	Shader* plotShader, *gridShader;
+
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+
+	glm::mat4 model, view, projection;
+
+	static inline bool isInit = false;
 };
