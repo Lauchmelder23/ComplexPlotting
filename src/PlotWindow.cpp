@@ -6,6 +6,7 @@
 #include <complex>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
@@ -26,10 +27,13 @@ fCmplx test_function(fCmplx z)
 
 PlotWindow::PlotWindow(int w, int h, int id, unsigned int detail, std::string title) :
 	window(nullptr), id(id), 
-	model(glm::mat4(1.0f)), view(glm::mat4(1.0f)), projection(glm::mat4(1.0f)),
+	projection(glm::mat4(1.0f)),
 	VAO(0), VBO(0), EBO(0)
 {
 	IMGUI_CHECKVERSION();
+
+	width = w;
+	height = h;
 
 	window = glfwCreateWindow(w, h, ("Plot " + std::to_string(id) + " | " + title).c_str(), NULL, NULL);
 	if (window == nullptr)
@@ -44,6 +48,9 @@ PlotWindow::PlotWindow(int w, int h, int id, unsigned int detail, std::string ti
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
+	glfwSetMouseButtonCallback(window, MouseButtonCallback);
+	glfwSetScrollCallback(window, ScrollCallback);
+	glfwSetCursorPosCallback(window, CursorPositionCallback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -120,8 +127,8 @@ PlotWindow::PlotWindow(int w, int h, int id, unsigned int detail, std::string ti
 
 	glEnable(GL_DEPTH_TEST);
 
-	view = glm::rotate(view, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	view = glm::translate(view, glm::vec3(0.0f, -3.0f, -3.0f));
+	//view = glm::rotate(view, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	view = glm::translate(view, glm::vec3(0.0f, -0.0f, -3.0f));
 	projection = glm::perspective(45.0f, (float)w / (float)h, 0.1f, 10.0f);
 }
 
@@ -156,7 +163,6 @@ void PlotWindow::Display()
 
 	static float transX = 0.0f, transY = 0.0f, transZ = 0.0f;
 	static float pitch = 0.0f, yaw = 0.0f, roll = 0.0f;
-	static float scale = 1.0f;
 	static bool grid = true;
 
 	ImGui_ImplOpenGL3_NewFrame();
@@ -169,7 +175,7 @@ void PlotWindow::Display()
 	if (ImGui::CollapsingHeader("Plot"))
 	{
 		ImGui::Checkbox("Grid", &grid);
-		ImGui::SliderFloat("Scale", &scale, 0.0f, 10.0f);
+		ImGui::SliderFloat("Scale", &scaling, 0.0f, 10.0f);
 		ImGui::Separator();
 		ImGui::SliderFloat("X", &transX, -5.0f, 5.0f);
 		ImGui::SliderFloat("Y", &transY, -5.0f, 5.0f);
@@ -182,14 +188,17 @@ void PlotWindow::Display()
 
 	ImGui::End();
 
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(transX, transY, transZ));
-	model = glm::scale(model, glm::vec3(scale, scale, scale));
-	model = glm::rotate(model, pitch, glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, yaw, glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::rotate(model, roll, glm::vec3(0.0f, 0.0f, 1.0f));
+	//model = glm::mat4(1.0f);
+	//model = glm::translate(model, glm::vec3(transX, transY, transZ));
+	//model = glm::scale(model, glm::vec3(scale, scale, scale));
+	//model = glm::rotate(model, pitch, glm::vec3(1.0f, 0.0f, 0.0f));
+	//model = glm::rotate(model, yaw, glm::vec3(0.0f, 1.0f, 0.0f));
+	//model = glm::rotate(model, roll, glm::vec3(0.0f, 0.0f, 1.0f));
 
 	glBindVertexArray(VAO);
+
+	model *= glm::toMat4(modelRotation);
+	projection = glm::perspective(45.0f, (float)width / (float)height, 0.1f, 100.0f);
 
 	if (grid)
 	{
@@ -218,5 +227,40 @@ void PlotWindow::Display()
 void PlotWindow::FramebufferSizeCallback(GLFWwindow* window, int w, int h)
 {
 	glfwMakeContextCurrent(window);
+	width = w;
+	height = h;
 	glViewport(0, 0, w, h);
+}
+
+void PlotWindow::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	isLeftButtonDown = ((button == GLFW_MOUSE_BUTTON_LEFT) && (action == GLFW_PRESS));
+	isRightButtonDown = ((button == GLFW_MOUSE_BUTTON_RIGHT) && (action == GLFW_PRESS));
+}
+
+void PlotWindow::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	model = glm::scale(model, glm::vec3(1.0f + yoffset / 5.0f));
+}
+
+void PlotWindow::CursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	glm::vec2 currentPos = glm::vec2(-ypos, -xpos);
+	glm::vec2 diff = currentPos - prevCursorPos;
+
+	if (isRightButtonDown)
+	{
+		static glm::vec3 xAxis, yAxis;
+		xAxis = glm::inverse(model) * glm::inverse(view) * glm::vec4(1.0f, 0.0f, 0.0, 0.0f);
+		yAxis = glm::inverse(model) * glm::inverse(view) * glm::vec4(0.0f, 1.0f, 0.0, 0.0f);
+		model = glm::rotate(model, -diff.x / 30.f, xAxis);
+		model = glm::rotate(model, -diff.y / 30.f, yAxis);
+	}
+
+	if (isLeftButtonDown)
+	{
+		view = glm::translate(view, glm::vec3(-diff.y, diff.x, 0.0f) / 50.0f);
+	}
+
+	prevCursorPos = currentPos;
 }
